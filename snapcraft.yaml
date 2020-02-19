@@ -1,0 +1,79 @@
+name: helloworld-gui
+version: "1.2"
+summary: GUI version of HelloWorld - Displays the famous "Hello World" message
+title: HelloWorld GUI
+license: MIT
+base: core18
+confinement: strict
+grade: stable
+description: |
+    HelloWorld GUI is an application that displays the famous Hello World message in GUI. It can be used in various situations such as GUI testing.
+apps:
+    helloworld-gui:
+       command: desktop-launch $SNAP/usr/bin/helloworld-gui
+       desktop: usr/share/applications/helloworld-gui.desktop
+       environment:
+        QT_QPA_PLATFORMTHEME : gtk3
+       plugs: [x11, unity7, gsettings, pulseaudio, wayland, network, network-bind, home, locale-control, desktop, desktop-legacy]
+parts:
+     helloworld-gui: 
+        plugin: qmake
+        qt-version: qt5
+        project-files: [helloworld-qt-gui.pro]
+        source: .
+        override-build: |
+          qmake PREFIX=$SNAPCRAFT_PART_INSTALL/usr
+          make 
+          make install
+          sed -i 's|Icon=helloworld-gui|Icon=/usr/share/pixmaps/helloworld-gui\.png|' $SNAPCRAFT_PART_INSTALL/usr/share/applications/helloworld-gui.desktop
+          echo Done!
+        build-packages:
+          - qt5-default
+          - qtbase5-dev
+          - qttools5-dev
+        stage-packages:
+          - libqt5gui5
+        after: [desktop-qt5]
+     desktop-qt5:
+      build-packages:
+          - build-essential
+          - qtbase5-dev
+          - dpkg-dev
+      make-parameters:
+          - FLAVOR=qt5
+      plugin: make
+      source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+      source-subdir: qt
+      stage-packages:
+          - libxkbcommon0
+          - ttf-ubuntu-font-family
+          - dmz-cursor-theme
+          - light-themes
+          - adwaita-icon-theme
+          - gnome-themes-standard
+          - shared-mime-info
+          - libqt5gui5
+          - libgdk-pixbuf2.0-0
+          - libqt5svg5
+          - try:
+            - appmenu-qt5
+          - locales-all
+          - xdg-user-dirs
+          - fcitx-frontend-qt5
+     qt5-gtk-platform:
+      plugin: nil
+      stage-packages:
+          - qt5-gtk-platformtheme
+plugs:
+  gtk-3-themes:
+    interface: content
+    target: $SNAP/share/themes
+    default-provider: gtk-common-themes:gtk-3-themes
+  icon-themes:
+    interface: content
+    target: $SNAP/share/icons
+    default-provider: gtk-common-themes:icon-themes
+  sound-themes:
+    interface: content
+    target: $SNAP/share/sounds
+    default-provider: gtk-common-themes:sounds-themes

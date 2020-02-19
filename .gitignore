@@ -1,0 +1,17 @@
+*.pro.user
+app/translations/*.qm
+app/core
+app/*.o
+app/*.core
+Makefile
+app/Makefile
+*.user*
+app/helloworld-gui
+.qmake.stash
+app/ui_*
+app/moc_*
+app/qrc_translations.cpp
+snap/
+parts/
+stage/
+prime/
